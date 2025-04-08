@@ -7,7 +7,7 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-evenly">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
@@ -17,6 +17,21 @@
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="ContactUs">İletişim</a>
                     </li>
                 </ul>
+                <form action="/Product" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input name="q" type="search" class="form-control" placeholder="Ürün ara..." aria-label="Search">
+                </form>
+                <div class="text-end">
+                    <div class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           Giriş Yap
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Account/SignIn">Giriş</a></li>
+                            <li><a class="dropdown-item" href="/Account/SignUp">Üye Ol</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>

@@ -1,0 +1,12 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model News
+
+<div class="col mb-5">
+    <a href="/News/Detail/@Model.Id">
+    <img src="/Img/@Model.Image" alt="@Model.Name" class="img-fluid" />    
+    </a>
+</div>

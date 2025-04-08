@@ -6,12 +6,13 @@ namespace Eticaret.Core.Entities
 	public class AppUser:IEntity
 	{
 		public int Id { get; set; }
-		[Display(Name = "Adı")]
+		[Display(Name = "Adı"), Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
 		public string Name { get; set; }
-		[Display(Name = "Soyadı")]
+		[Display(Name = "Soyadı"), Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
 		public string Surname { get; set; }
+		[Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
 		public string Email { get; set; }
-		[Display(Name = "Şifre")]
+		[Display(Name = "Şifre"), Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
 		public string Password { get; set; }
 		[Display(Name = "Telefon")]
 		public string? Phone { get; set; }

@@ -46,6 +46,8 @@
                 </td>
                 <td>
 
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary"> <i class="fa-solid fa-pen"></i> Düzenle</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info"> <i class="fa-solid fa-magnifying-glass"></i> Detay</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"> <i class="fa-solid fa-trash"></i> Sil</a>
                 </td>
             </tr>
