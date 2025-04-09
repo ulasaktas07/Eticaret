@@ -5,6 +5,7 @@ namespace Eticaret.WebUI.Models
 	public class LoginViewModel
 	{
 		[Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
+		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 		[Display(Name = "Şifre"), Required(ErrorMessage = "{0} Alanı Boş Geçilemez!")]
 		[DataType(DataType.Password)]

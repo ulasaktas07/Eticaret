@@ -7,18 +7,22 @@
     body {
         height: 100%;
     }
+
     .form-signin {
         max-width: 330px;
         padding: 1rem;
     }
+
         .form-signin .form-floating:focus-within {
             z-index: 2;
         }
+
         .form-signin input[type="email"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
         }
+
         .form-signin input[type="password"] {
             margin-bottom: 10px;
             border-top-left-radius: 0;
@@ -29,14 +33,16 @@
 <main class="form-signin w-100 m-auto shadow rounded my-5">
     <form asp-action="SignIn">
         <h1 class="h3 mb-3 fw-normal">Üye Girişi</h1>
-
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-floating">
             <input asp-for="Email" class="form-control" id="floatingInput" placeholder="name@example.com" />
             <label for="floatingInput">Email</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
         <div class="form-floating">
             <input asp-for="Password" class="form-control" id="floatingPassword" placeholder="Password" />
             <label for="floatingPassword">Şifre</label>
+            <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
         <div class="form-check text-start my-3">
@@ -45,6 +51,7 @@
                 Beni Hatırla
             </label>
         </div>
+        <input type="hidden" asp-for="ReturnUrl" value="@Context.Request.Query["ReturnUrl"]" />
         <button class="btn btn-primary w-100 py-2" type="submit">Giriş Yap</button>
     </form>
 </main>

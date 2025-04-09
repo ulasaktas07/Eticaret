@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Eticaret.Core.Entities;
 using Eticaret.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eticaret.WebUI.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+	[Area("Admin"), Authorize(Policy ="AdminPolicy")]
+
     public class AppUserController : Controller
     {
         private readonly DatabaseContext _context;

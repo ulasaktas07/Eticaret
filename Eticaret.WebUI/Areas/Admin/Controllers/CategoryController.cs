@@ -4,10 +4,11 @@ using Eticaret.Core.Entities;
 using Eticaret.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Eticaret.WebUI.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Eticaret.WebUI.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+	[Area("Admin"), Authorize(Policy = "AdminPolicy")]
 	public class CategoryController : Controller
 	{
 		private readonly DatabaseContext _context;

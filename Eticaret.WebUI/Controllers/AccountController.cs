@@ -1,6 +1,11 @@
 ﻿using Eticaret.Core.Entities;
 using Eticaret.Data;
+using Eticaret.WebUI.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Eticaret.WebUI.Controllers
 {
@@ -12,6 +17,7 @@ namespace Eticaret.WebUI.Controllers
 		{
 			_context = context;
 		}
+		[Authorize]
 		public IActionResult Index()
 		{
 			return View();
@@ -21,9 +27,42 @@ namespace Eticaret.WebUI.Controllers
 			return View();
 		}
 		[HttpPost]
-		public IActionResult SignIn(AppUser appUser)
+		public async Task<IActionResult> SignIn(LoginViewModel loginViewModel)
 		{
-			return View();
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					var account = await _context.AppUsers.FirstOrDefaultAsync(x => x.Email == loginViewModel.Email &
+					x.Password == loginViewModel.Password & x.IsActive);
+					if (account == null)
+					{
+						ModelState.AddModelError("", "Giriş Başarısız!");
+					}
+					else
+					{
+						var claims = new List<Claim>()
+						{
+							new(ClaimTypes.Name,account.Name),
+							new(ClaimTypes.Role,account.IsAdmin ? "Admin":"Customer"),
+							new(ClaimTypes.Email,account.Email),
+							new("UserId",account.Id.ToString()),
+							new("UserGuid",account.UserGuid.ToString())
+						};
+						var userIdentity = new ClaimsIdentity(claims, "Login");
+						ClaimsPrincipal userPrincipal = new ClaimsPrincipal(userIdentity);
+						await HttpContext.SignInAsync(userPrincipal);
+						return Redirect(string.IsNullOrEmpty(loginViewModel.ReturnUrl) ? "/" : loginViewModel.ReturnUrl);
+					}
+
+				}
+				catch (Exception)
+				{
+
+					ModelState.AddModelError("", "Hata Oluştu!");
+				}
+			}
+			return View(loginViewModel);
 		}
 		public IActionResult SignUp()
 		{
@@ -41,6 +80,11 @@ namespace Eticaret.WebUI.Controllers
 				return RedirectToAction(nameof(Index));
 			}
 			return View(appUser);
+		}
+		public async Task<IActionResult> SignOutAsync()
+		{
+			await HttpContext.SignOutAsync();
+			return RedirectToAction("SignIn");
 		}
 	}
 }

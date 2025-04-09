@@ -17,21 +17,37 @@
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="ContactUs">İletişim</a>
                     </li>
                 </ul>
-                <form action="/Product" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                <form action="/Product" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-4" role="search">
                     <input name="q" type="search" class="form-control" placeholder="Ürün ara..." aria-label="Search">
                 </form>
-                <div class="text-end">
-                    <div class="dropdown">
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown me-lg-5">
                         <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                           Giriş Yap
+                            Hesabım
                         </a>
 
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Account">Kullanıcı Bilgileri</a></li>
+                            <li><a class="dropdown-item" href="/Account/">Siparişlerim</a></li>
+                            <li><a class="dropdown-item" href="/Account/">Değerlendirmelerim</a></li>
+                            <li><a class="dropdown-item" href="/Account/SignOut">Oturumu Kapat</a></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <div class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Giriş Yap
+                        </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/Account/SignIn">Giriş</a></li>
                             <li><a class="dropdown-item" href="/Account/SignUp">Üye Ol</a></li>
                         </ul>
                     </div>
-                </div>
+                }
+
             </div>
         </div>
     </nav>
