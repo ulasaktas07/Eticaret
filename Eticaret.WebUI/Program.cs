@@ -13,6 +13,15 @@ namespace Eticaret.WebUI
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
 
+			builder.Services.AddSession(options =>
+			{
+				options.Cookie.Name = ".Eticaret.Session";	
+				options.Cookie.HttpOnly = true;
+				options.Cookie.IsEssential = true; // GDPR uyumluluðu için gerekli
+				options.IdleTimeout = TimeSpan.FromDays(1); // Oturum zaman aþým süresi
+				options.IOTimeout = TimeSpan.FromMinutes(10); // Giriþ süresi
+			});
+
 			builder.Services.AddDbContext<DatabaseContext>();
 
 			builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -43,6 +52,8 @@ namespace Eticaret.WebUI
 			app.UseStaticFiles();
 
 			app.UseRouting();
+			app.UseSession();
+
 			app.UseAuthentication(); // Önce oturum açma
 			app.UseAuthorization(); // Sonra yetkilendirme
 
