@@ -1,21 +1,22 @@
-﻿using Eticaret.Data;
+﻿using Eticaret.Core.Entities;
+using Eticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Eticaret.WebUI.Controllers
 {
 	public class NewsController : Controller
 	{
-		private readonly DatabaseContext _context;
+		private readonly IService<News> _service;
 
-		public NewsController(DatabaseContext context)
+		public NewsController(IService<News> service)
 		{
-			_context = context;
+			_service = service;
 		}
 
 		public async Task<IActionResult> Index()
 		{
-			return View(await _context.News.ToListAsync());
+			return View(await _service.GetAllAsync());
 		}
 		public async Task<IActionResult> Detail(int? id)
 		{
@@ -24,8 +25,7 @@ namespace Eticaret.WebUI.Controllers
 				return NotFound();
 			}
 
-			var news = await _context.News
-				.FirstOrDefaultAsync(m => m.Id == id);
+			var news = await _service.GetAsync(m => m.Id == id);
 			if (news == null)
 			{
 				return NotFound();

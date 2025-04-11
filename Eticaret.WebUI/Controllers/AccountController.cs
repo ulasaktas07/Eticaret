@@ -1,5 +1,5 @@
 ﻿using Eticaret.Core.Entities;
-using Eticaret.Data;
+using Eticaret.Service.Abstract;
 using Eticaret.WebUI.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,16 +10,17 @@ namespace Eticaret.WebUI.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly DatabaseContext _context;
+	private readonly IService<AppUser> _service;
 
-		public AccountController(DatabaseContext context)
+		public AccountController(IService<AppUser> service)
 		{
-			_context = context;
+			_service = service;
 		}
+
 		[Authorize]
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			AppUser user = _context.AppUsers.FirstOrDefault(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+			AppUser user =await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
 			if (user is null)
 			{
 				return NotFound();
@@ -37,14 +38,14 @@ namespace Eticaret.WebUI.Controllers
 			return View(model);
 		}
 		[HttpPost, Authorize]
-		public IActionResult Index(UserEditViewModel model)
+		public async Task<IActionResult> IndexAsync(UserEditViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					AppUser user = _context.AppUsers.FirstOrDefault(x => x.UserGuid.ToString() ==
-					HttpContext.User.FindFirst("UserGuid").Value);
+					AppUser user = await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+
 					if (user is not null)
 					{
 						user.Surname = model.Surname;
@@ -53,8 +54,8 @@ namespace Eticaret.WebUI.Controllers
 						user.Password = model.Password;
 						user.Phone = model.Phone;
 						user.UserName = model.UserName;
-						_context.Update(user);
-						var sonuc = _context.SaveChanges();
+						_service.Update(user);
+						var sonuc = _service.SaveChanges();
 						if (sonuc > 0)
 						{
 							TempData["Message"] = @"<div class=""alert alert-success alert-dismissible fade show"" role=""alert"">
@@ -86,7 +87,7 @@ namespace Eticaret.WebUI.Controllers
 			{
 				try
 				{
-					var account = await _context.AppUsers.FirstOrDefaultAsync(x => x.Email == loginViewModel.Email &
+					var account = await _service.GetAsync(x => x.Email == loginViewModel.Email &
 					x.Password == loginViewModel.Password & x.IsActive);
 					if (account == null)
 					{
@@ -128,8 +129,8 @@ namespace Eticaret.WebUI.Controllers
 			appUser.IsActive = true;
 			if (ModelState.IsValid)
 			{
-				await _context.AddAsync(appUser);
-				await _context.SaveChangesAsync();
+				await _service.AddAsync(appUser);
+				await _service.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
 			return View(appUser);

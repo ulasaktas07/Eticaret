@@ -1,4 +1,6 @@
 using Eticaret.Data;
+using Eticaret.Service.Abstract;
+using Eticaret.Service.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 
@@ -15,7 +17,7 @@ namespace Eticaret.WebUI
 
 			builder.Services.AddSession(options =>
 			{
-				options.Cookie.Name = ".Eticaret.Session";	
+				options.Cookie.Name = ".Eticaret.Session";
 				options.Cookie.HttpOnly = true;
 				options.Cookie.IsEssential = true; // GDPR uyumluluðu için gerekli
 				options.IdleTimeout = TimeSpan.FromDays(1); // Oturum zaman aþým süresi
@@ -23,6 +25,7 @@ namespace Eticaret.WebUI
 			});
 
 			builder.Services.AddDbContext<DatabaseContext>();
+			builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
 
 			builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 				.AddCookie(x =>
@@ -35,8 +38,8 @@ namespace Eticaret.WebUI
 			});
 			builder.Services.AddAuthorization(x =>
 			{
-				x.AddPolicy("AdminPolicy",policy=>policy.RequireClaim(ClaimTypes.Role,"Admin"));
-				x.AddPolicy("UserPolicy",policy=>policy.RequireClaim(ClaimTypes.Role,"Admin","User","Customer"));
+				x.AddPolicy("AdminPolicy", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+				x.AddPolicy("UserPolicy", policy => policy.RequireClaim(ClaimTypes.Role, "Admin", "User", "Customer"));
 			});
 			var app = builder.Build();
 

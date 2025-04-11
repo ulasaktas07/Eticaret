@@ -1,4 +1,5 @@
-﻿using Eticaret.Data;
+﻿using Eticaret.Core.Entities;
+using Eticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,11 @@ namespace Eticaret.WebUI.Controllers
 {
 	public class CategoryController : Controller
 	{
-		private readonly DatabaseContext _context;
+		private readonly IService<Category> _service;
 
-		public CategoryController(DatabaseContext context)
+		public CategoryController(IService<Category> service)
 		{
-			_context = context;
+			_service = service;
 		}
 
 		public async Task<IActionResult> IndexAsync(int? id)
@@ -20,7 +21,7 @@ namespace Eticaret.WebUI.Controllers
 				return NotFound();
 			}
 
-			var category = await _context.Categories.Include(c => c.Products)
+			var category = await _service.GetQueryable().Include(c => c.Products)
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (category == null)
 			{

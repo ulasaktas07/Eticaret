@@ -19,4 +19,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Eticaret.Data\Eticaret.Data.csproj" />
+    <ProjectReference Include="..\EticaretCore\Eticaret.Core.csproj" />
+  </ItemGroup>
+
 </Project>
