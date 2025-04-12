@@ -6,5 +6,6 @@ namespace Eticaret.WebUI.Models
 	{
 		public Product? Product { get; set; }
 		public IEnumerable<Product>? RelatedProducts { get; set; }
+
 	}
 }
