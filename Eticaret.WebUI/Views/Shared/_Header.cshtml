@@ -25,6 +25,7 @@
                         {
                             <a class="dropdown-toggle nav-link text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Sepetim
+                                <span class="badge bg-danger text-white ms-1 rounded-pill">@cart.CartLines.Count</span>
                             </a>
                             <ul class="dropdown-menu">
                                 @foreach (var item in cart.CartLines)
@@ -47,7 +48,7 @@
                         }
                     }
                 </div>
-                <div class="dropdown">
+                <div class="dropdown mx-3">
                     <a class="nav-link text-dark" href="/Favorites">
                         Favorilerim
                     </a>
@@ -64,9 +65,10 @@
 
                         <ul class="dropdown-menu ">
                             <li><a class="dropdown-item" href="/Account">Kullanıcı Bilgileri</a></li>
+                            <li><a class="dropdown-item" href="/MyAddresses">Kayıtlı Adreslerim</a></li>
                             <li><a class="dropdown-item" href="/Account/">Siparişlerim</a></li>
                             <li><a class="dropdown-item" href="/Account/">Değerlendirmelerim</a></li>
-                            <li><a class="dropdown-item" href="/Account/SignOut">Oturumu Kapat</a></li>
+                            <li class="text-center"><a class="btn btn-danger" href="/Account/SignOut">Oturumu Kapat</a></li>
                         </ul>
                     </div>
                 }
@@ -77,8 +79,8 @@
                             Giriş Yap
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item text-wrap" href="/Account/SignIn">Giriş</a></li>
-                            <li><a class="dropdown-item text-wrap" href="/Account/SignUp">Üye Ol</a></li>
+                            <li><a class="dropdown-item " href="/Account/SignIn">Giriş</a></li>
+                            <li><a class="dropdown-item " href="/Account/SignUp">Üye Ol</a></li>
                         </ul>
                     </div>
                 }

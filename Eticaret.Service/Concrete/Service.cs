@@ -31,13 +31,10 @@ namespace Eticaret.Service.Concrete
 		{
 			_dbSet.Remove(entity);
 		}
-
-
 		public T Find(int id)
 		{
 			return _dbSet.Find(id);
 		}
-
 		public async Task<T> FindAsync(int id)
 		{
 			return await _dbSet.FindAsync(id);

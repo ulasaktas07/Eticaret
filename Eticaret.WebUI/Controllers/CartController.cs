@@ -3,22 +3,29 @@ using Eticaret.Service.Abstract;
 using Eticaret.Service.Concrete;
 using Eticaret.WebUI.ExtensionMethods;
 using Eticaret.WebUI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Eticaret.WebUI.Controllers
 {
 	public class CartController : Controller
 	{
 		private readonly IService<Product> _serviceProduct;
-
-		public CartController(IService<Product> serviceProduct)
+		private readonly IService<AppUser> _serviceAppUser;
+		private readonly IService<Address> _serviceAddress;
+		private readonly IService<Order> _serviceOrder;
+		public CartController(IService<Product> serviceProduct, IService<Address> serviceAddress, IService<AppUser> serviceAppUser, IService<Order> serviceOrder)
 		{
 			_serviceProduct = serviceProduct;
+			_serviceAddress = serviceAddress;
+			_serviceAppUser = serviceAppUser;
+			_serviceOrder = serviceOrder;
 		}
 		public IActionResult Index()
 		{
 			var cart = GetCart();
-			var model=new CartViewModel()
+			var model = new CartViewModel()
 			{
 				CartLines = cart.CartLines,
 				TotalPrice = cart.TotalPrice()
@@ -58,6 +65,94 @@ namespace Eticaret.WebUI.Controllers
 				HttpContext.Session.SetJson("Cart", cart);
 			}
 			return RedirectToAction("Index");
+		}
+		[Authorize]
+		public async Task<IActionResult> Checkout()
+		{
+			var cart = GetCart();
+			var appUser = await _serviceAppUser.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+			if (appUser == null)
+			{
+				return RedirectToAction("SignIn", "Account");
+			}
+			var addresses = await _serviceAddress.GetAllAsync(a => a.AppUserId == appUser.Id && a.IsActive);
+			var model = new CheckoutViewModel()
+			{
+				CartProducts = cart.CartLines,
+				TotalPrice = cart.TotalPrice(),
+				Addresses = addresses
+			};
+
+			return View(model);
+		}
+		[Authorize, HttpPost]
+		public async Task<IActionResult> Checkout(string CardNumber, string CardMonth, string CardYear, string CVV,
+			string DeliveryAddress, string BillingAddress)
+		{
+			var cart = GetCart();
+			var appUser = await _serviceAppUser.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+			if (appUser == null)
+			{
+				return RedirectToAction("SignIn", "Account");
+			}
+			var addresses = await _serviceAddress.GetAllAsync(a => a.AppUserId == appUser.Id && a.IsActive);
+			var model = new CheckoutViewModel()
+			{
+				CartProducts = cart.CartLines,
+				TotalPrice = cart.TotalPrice(),
+				Addresses = addresses
+			};
+			if (string.IsNullOrWhiteSpace(CardNumber) || string.IsNullOrWhiteSpace(CardMonth) || string.IsNullOrWhiteSpace(CardYear)
+				|| string.IsNullOrWhiteSpace(CVV) || string.IsNullOrWhiteSpace(DeliveryAddress) || string.IsNullOrWhiteSpace(BillingAddress))
+			{
+				return View(model);
+			}
+			var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
+			var faturaAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == BillingAddress);
+
+			//Ödeme çekme
+
+			var siparis = new Order()
+			{
+				AppUserId = appUser.Id,
+				BillingAddress = BillingAddress,
+				CustomerId = appUser.UserGuid.ToString(),
+				DeliveryAddress = DeliveryAddress,
+				TotalPrice = cart.TotalPrice(),
+				OrderNumber = Guid.NewGuid().ToString(),
+				OrderDate = DateTime.Now,
+				OrderLines = []
+			};
+			foreach (var item in cart.CartLines)
+			{
+				siparis.OrderLines.Add(new OrderLine
+				{
+					ProductId = item.Product.Id,
+					OrderId = siparis.Id,
+					Quantity = item.Quantity,
+					UnitPrice = item.Product.Price,
+				});
+			}
+			try
+			{
+				await _serviceOrder.AddAsync(siparis);
+				var sonuc = await _serviceOrder.SaveChangesAsync();
+				if (sonuc>0)
+				{
+					HttpContext.Session.Remove("Cart");
+					return RedirectToAction("Thanks");
+				}
+			}
+			catch (Exception)
+			{
+
+				TempData["Message"]= "Bir hata oluştu. Lütfen tekrar deneyin.";
+			}
+			return View(model);
+		}
+		public IActionResult Thanks()
+		{
+			return View();
 		}
 		private CartService GetCart()
 		{

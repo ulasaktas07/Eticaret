@@ -4,6 +4,7 @@ using Eticaret.WebUI.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Eticaret.WebUI.Controllers
@@ -11,13 +12,15 @@ namespace Eticaret.WebUI.Controllers
 	public class AccountController : Controller
 	{
 	private readonly IService<AppUser> _service;
+	private readonly IService<Order> _serviceOrder;
 
-		public AccountController(IService<AppUser> service)
+		public AccountController(IService<AppUser> service, IService<Order> serviceOrder)
 		{
 			_service = service;
+			_serviceOrder = serviceOrder;
 		}
 
-		[Authorize]
+		[Authorize] 
 		public async Task<IActionResult> Index()
 		{
 			AppUser user =await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
@@ -76,6 +79,18 @@ namespace Eticaret.WebUI.Controllers
 			}
 			return View(model);
 		}
+		[Authorize]
+		public async Task<IActionResult> MyOrders()
+		{
+			AppUser user = await _service.GetAsync(x => x.UserGuid.ToString() == HttpContext.User.FindFirst("UserGuid").Value);
+			if (user is null)
+			{
+				await HttpContext.SignOutAsync();
+				return RedirectToAction("SignIn");
+			}
+			var model = _serviceOrder.GetQueryable().Where(x => x.AppUserId == user.Id).Include(o=>o.OrderLines).ThenInclude(p=>p.Product);
+			return View(model);
+		}
 		public IActionResult SignIn()
 		{
 			return View();
@@ -123,7 +138,7 @@ namespace Eticaret.WebUI.Controllers
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> SignUpAsync(AppUser appUser)
+		public async Task<IActionResult> SignUp(AppUser appUser)
 		{
 			appUser.IsAdmin = false;
 			appUser.IsActive = true;
@@ -131,7 +146,7 @@ namespace Eticaret.WebUI.Controllers
 			{
 				await _service.AddAsync(appUser);
 				await _service.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				return RedirectToAction("Index");
 			}
 			return View(appUser);
 		}
