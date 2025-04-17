@@ -107,17 +107,17 @@ namespace Eticaret.WebUI.Controllers
 			{
 				return View(model);
 			}
-			var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
 			var faturaAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == BillingAddress);
+			var teslimatAdresi = addresses.FirstOrDefault(a => a.AddressGuid.ToString() == DeliveryAddress);
 
 			//Ödeme çekme
 
 			var siparis = new Order()
 			{
 				AppUserId = appUser.Id,
-				BillingAddress = BillingAddress,
+				BillingAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}", //BillingAddress,
 				CustomerId = appUser.UserGuid.ToString(),
-				DeliveryAddress = DeliveryAddress,
+				DeliveryAddress = $"{faturaAdresi.OpenAddress} {faturaAdresi.District} {faturaAdresi.City}",//DeliveryAddress,
 				TotalPrice = cart.TotalPrice(),
 				OrderNumber = Guid.NewGuid().ToString(),
 				OrderDate = DateTime.Now,

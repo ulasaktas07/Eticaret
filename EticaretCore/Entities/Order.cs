@@ -20,5 +20,24 @@ namespace Eticaret.Core.Entities
 		[Display(Name = "Sipariş Tarihi")]
 		public DateTime OrderDate { get; set; } = DateTime.Now;
 		public List<OrderLine>? OrderLines { get; set; }
+		[Display(Name = "Müşteri")]
+		public AppUser? AppUser { get; set; }
+		[Display(Name = "Sipariş Durumu")]
+		public EnumOrderState OrderState { get; set; } = EnumOrderState.Waiting;
+	}
+	public enum EnumOrderState
+	{
+		[Display(Name = "Onay Bekliyor")]
+		Waiting,
+		[Display(Name = "Onaylandı")]
+		Approved,
+		[Display(Name = "Kargoya Verildi")]
+		Shipped,
+		[Display(Name = "Tamamlandı")]
+		Completed,
+		[Display(Name = "İptal Edildi")]
+		Cancelled,
+		[Display(Name = "İade Edildi")]
+		Returned
 	}
 }
