@@ -14,9 +14,7 @@
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                     </li>
                     @await Component.InvokeAsync("Categories")
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Home" asp-action="ContactUs">İletişim</a>
-                    </li>
+
                 </ul>
                 <div class="dropdown">
                     @{
@@ -24,7 +22,7 @@
                         if (cart != null && cart.CartLines.Count > 0)
                         {
                             <a class="dropdown-toggle nav-link text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Sepetim
+                                <i class="bi bi-cart-fill"></i> Sepetim
                                 <span class="badge bg-danger text-white ms-1 rounded-pill">@cart.CartLines.Count</span>
                             </a>
                             <ul class="dropdown-menu">
@@ -43,14 +41,26 @@
                         else
                         {
                             <a class="nav-link text-dark" href="/Cart">
-                                Sepetim
+                                <i class="bi bi-person"></i>    Sepetim
                             </a>
                         }
                     }
                 </div>
                 <div class="dropdown mx-3">
                     <a class="nav-link text-dark" href="/Favorites">
-                        Favorilerim
+                        @{
+                            var favorites = Context.Session.GetJson<List<Product>>("GetFavorites");
+                            if (favorites is not null && favorites.Count > 0)
+                            {
+                                <i class="bi bi-heart-fill"></i>
+                                @:Favorilerim(@favorites.Count)
+                            }
+                            else
+                            {
+                                <i class="bi bi-heart"></i>
+                                @:Favorilerim
+                            }
+                        }
                     </a>
                 </div>
                 <form action="/Product" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-4" role="search">
@@ -60,7 +70,7 @@
                 {
                     <div class="dropdown me-lg-5">
                         <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Hesabım
+                            <i class="bi bi-person-fill"></i>  Hesabım
                         </a>
 
                         <ul class="dropdown-menu ">
@@ -76,7 +86,7 @@
                 {
                     <div class="dropdown">
                         <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Giriş Yap
+                            <i class="bi bi-person"></i>  Giriş Yap
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item " href="/Account/SignIn">Giriş</a></li>
@@ -84,7 +94,11 @@
                         </ul>
                     </div>
                 }
+
             </div>
+
+            <a class="nav-link text-dark" asp-controller="Home" asp-action="ContactUs">İletişim</a>
+
         </div>
     </nav>
 </header>
